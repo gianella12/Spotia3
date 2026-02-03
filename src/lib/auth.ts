@@ -3,6 +3,7 @@ import SpotifyProvider from 'next-auth/providers/spotify';
 import { DrizzleAdapter } from '@auth/drizzle-adapter';
 import { db } from './db';
 import { accounts, sessions, users, verificationTokens } from '@/src/db/schema';
+import { JWT } from 'next-auth/jwt';
 
 const spotifyScopes = [
   'user-read-email',
@@ -25,7 +26,7 @@ export const authOptions: NextAuthOptions = {
     accountsTable: accounts,
     sessionsTable: sessions,
     verificationTokensTable: verificationTokens,
-  }) as any,
+  }),
   providers: [
     SpotifyProvider({
       clientId: process.env.SPOTIFY_CLIENT_ID!,
@@ -74,13 +75,13 @@ export const authOptions: NextAuthOptions = {
   },
 };
 
-async function refreshAccessToken(token: any) {
+async function refreshAccessToken(token: JWT) {
   try {
     const url =
       'https://accounts.spotify.com/api/token?' +
       new URLSearchParams({
         grant_type: 'refresh_token',
-        refresh_token: token.refreshToken,
+        refresh_token: token.refreshToken as string,
       });
 
     const response = await fetch(url, {
