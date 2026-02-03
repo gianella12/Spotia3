@@ -14,7 +14,6 @@ export function TopTracks() {
                 const res = await fetch("/api/spotify/top-tracks?limit=5&time_range=short_term");
                 if (!res.ok) throw new Error(`Error fetching play list: ${res.statusText}`);
                 const data = await res.json();
-                console.log("Play List Data:", data.items);
                 setTracksList(data.items);
             } catch (err) {
                 setError(`No se pudieron cargar las canciones: ${err}`);

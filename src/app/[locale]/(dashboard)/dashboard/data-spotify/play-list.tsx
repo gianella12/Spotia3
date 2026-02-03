@@ -1,9 +1,10 @@
 "use client";
 import { useState, useEffect } from "react";
+import { PlaylistItem } from "@/src/types/playList";
 
 
 export function Playlist() {
-    const [playList, setPlayList] = useState<[]>([]);
+    const [playList, setPlayList] = useState<PlaylistItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -13,8 +14,8 @@ export function Playlist() {
                 const res = await fetch("/api/spotify/play-list?limit=5");
                 if (!res.ok) throw new Error(`Error fetching play list: ${res.statusText}`);
                 const data = await res.json();
-                console.log("Play List Data:", data.items.id);
-                setPlayList(data.items);
+                console.log("Play List Data:", data);
+                setPlayList(data);
             } catch (err) {
                 setError(`No se pudieron cargar las canciones: ${err}`);
             } finally {
@@ -27,10 +28,22 @@ export function Playlist() {
     if (loading) return <p>Cargando playlist...</p>;
     if (error) return <p>{error}</p>;
     return (
-        <div className="max-w-3xl mx-auto flex flex-col gap-1">
-            <h2 className="text-2xl font-bold mb-2 mt-4 flex justify-center items-center">Canciones que más te representan en este período</h2>
-            
+        <div>
+            <h2>Mis Playlists</h2>
+            <ul>
+                {playList.map((playlist) => (
+                    <li key={playlist.id}>
+                        {playlist.name}
+                        <button 
+                        onClick={() => fetch(`/api/spotify/play-list/${playlist.id}/tracks`)}
+                        className="border-r-green-400 border m-3">
+                            Ver canciones
+                        </button>
+                    </li>
+                ))}
+            </ul>
         </div>
+
 
     );
 }
