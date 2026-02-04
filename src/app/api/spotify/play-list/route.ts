@@ -7,7 +7,7 @@ import { PlaylistItem } from "@/src/types/playList";
 export async function GET(req: Request) {
     try {
         const session = await getServerSession(authOptions);
-        console.log("SESSION:", session);
+      
 
         if (!session || !session.accessToken) {
             return NextResponse.json(
