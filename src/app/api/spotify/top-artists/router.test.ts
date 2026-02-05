@@ -1,12 +1,10 @@
 import { getServerSession } from "next-auth";
 import { GET } from "./route";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, MockedFunction, vi } from "vitest";
+import { Session } from "next-auth";
 
 vi.mock("next-auth", () => ({
-  getServerSession: vi.fn().mockResolvedValue({
-    user: { name: "Test User", email: "test@example.com" },
-    accessToken: "fake-token",
-  }),
+  getServerSession: vi.fn<() => Promise<Session | null>>(),
 }));
 vi.mock("@/src/lib/spotify/top-artists/route", () => ({
   getTopArtists: vi.fn().mockResolvedValue({
@@ -17,9 +15,16 @@ vi.mock("@/src/lib/spotify/top-artists/route", () => ({
   }),
 }));
 
-describe("GET /api/spotify/top-artists", () => {
+const mockedGetServerSession = getServerSession as MockedFunction<
+  typeof getServerSession
+>;
 
+describe("GET /api/spotify/top-artists", () => {
   it("devuelve status 200 y un array de artistas", async () => {
+    mockedGetServerSession.mockResolvedValue({
+      user: { name: "Test User", email: "test@example.com" },
+      accessToken: "fake-token",
+    } as Session);
     const response = await GET(
       new Request("http://localhost/api/spotify/top-artists"),
     );
@@ -29,7 +34,7 @@ describe("GET /api/spotify/top-artists", () => {
     expect(Array.isArray(data.items)).toBe(true);
   });
   it("devuelve status 401 cuando no hay sesión", async () => {
-    (getServerSession as any).mockResolvedValue(null);
+    mockedGetServerSession.mockResolvedValue(null);
     const response = await GET(
       new Request("http://localhost/api/spotify/top-artists"),
     );
