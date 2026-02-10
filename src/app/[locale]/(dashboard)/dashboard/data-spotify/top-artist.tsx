@@ -1,7 +1,7 @@
 "use client";
 import { CardArtist } from "@/src/app/_components/cardArtist"
 import { useTopArtists } from "@/src/hooks/useTopArtists";
-import  Loading  from "@/src/app/_components/loading";
+import Loading from "@/src/app/_components/loading";
 import { Artist } from "@/src/types/spotify";
 
 
@@ -9,10 +9,21 @@ type TypeTimeRange = {
   timeRange: string;
 }
 export function TopArtist(timeRange: TypeTimeRange) {
-  const { data: artists, isLoading, isError, error } = useTopArtists(timeRange);
+  const { data: artists, isLoading, isError, error, refetch } = useTopArtists(timeRange);
 
   if (isLoading) return <Loading />;
-  if (isError) return <p>{(error as Error).message}</p>;
+  if (isError) return (
+    <div>
+      <p>{(error as Error).message}</p>
+      <button
+        onClick={() => refetch()}
+        className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
+      >
+        Reintentar
+      </button>
+    </div>
+
+  );
   return (
     <>
       <div className="flex flex-col items-center justify-center">

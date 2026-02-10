@@ -2,7 +2,7 @@
 
 import { TrackCard } from "@/src/app/_components/trackCard";
 import { Track } from "@/src/types/track";
-import  Loading from "@/src/app/_components/loading";
+import Loading from "@/src/app/_components/loading";
 import { useQuery } from "@tanstack/react-query";
 
 
@@ -11,8 +11,8 @@ import { useQuery } from "@tanstack/react-query";
 type TypeTimeRange = {
     timeRange: string;
 }
-export function TopTracks({timeRange}:TypeTimeRange) {
-    const { data: tracksList, isLoading, isError, error } = useQuery<Track[]>({
+export function TopTracks({ timeRange }: TypeTimeRange) {
+    const { data: tracksList, isLoading, isError, error, refetch } = useQuery<Track[]>({
         queryKey: ["top-tracks", timeRange],
         queryFn: async () => {
             const res = await fetch(`/api/spotify/top-tracks?limit=5&time_range=${timeRange}`);
@@ -23,7 +23,18 @@ export function TopTracks({timeRange}:TypeTimeRange) {
     });
 
     if (isLoading) return <Loading />;
-    if (isError) return <p>{(error as Error).message}</p>;
+    if (isError) return (
+        <div>
+            <p>{(error as Error).message}</p>
+            <button
+                onClick={() => refetch()}
+                className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
+            >
+                Reintentar
+            </button>
+        </div>
+
+    );
 
     return (
         <div className="max-w-3xl mx-auto flex flex-col gap-1">
