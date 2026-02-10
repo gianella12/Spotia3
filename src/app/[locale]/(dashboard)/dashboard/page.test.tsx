@@ -6,15 +6,21 @@ import { useSession } from "next-auth/react";
 
 vi.mock("next-auth/react", () => ({
   useSession: vi.fn(),
-   getProviders: vi.fn(),
+}));
+
+vi.mock("@/src/app/_components/Loading", () => ({
+  default: () => <div data-testid="loading" />,
 }));
 
 
 describe("Dashboard", () => {
-  it("muestra 'Cargando...' cuando el estado es loading", () => {
-    (useSession as Mock).mockReturnValue({ data: null, status: "loading" });
+  it("renderiza el componente Loading cuando el estado es loading", () => {
+    (useSession as Mock).mockReturnValue({
+      data: null,
+      status: "loading"
+    });
 
     render(<Dashboard />);
-    expect(screen.getByText("Cargando...")).toBeInTheDocument();
+    expect(screen.getByTestId("loading")).toBeInTheDocument();
   });
 });
