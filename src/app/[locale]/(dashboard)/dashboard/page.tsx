@@ -6,13 +6,14 @@ import { TopArtist } from "./data-spotify/top-artist";
 import TopGenere from "@/src/app/_components/TopGenere";
 import { TopTracks } from "./data-spotify/top-tracks";
 import { Playlist } from "./data-spotify/play-list";
+import { useState } from "react";
+import TimeRangeSelector from "@/src/app/_components/TimeRangeSelector";
 
 export default function Dashboard() {
   const { data: session, status } = useSession();
-
+  const [timeRange, setTimeRange] = useState("short_term");
   if (status === "loading") return <p>Cargando...</p>;
   if (!session) return <p>No estás logueada</p>;
- 
   return (
     <div>
       <div className="flex flex-col items-end">
@@ -20,10 +21,10 @@ export default function Dashboard() {
         <p> {session.user?.email}</p>
       </div>
       <Playlist />
-
       <TopGenere />
-      <TopArtist />
-      <TopTracks />
+      <TimeRangeSelector timeRange={timeRange} setTimeRange={setTimeRange} />
+      <TopArtist timeRange={timeRange} />
+      <TopTracks  timeRange={timeRange} />
       <div>
         <h1>resouesta ia</h1>
         <h4></h4>
