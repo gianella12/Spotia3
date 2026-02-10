@@ -2,9 +2,11 @@
 import { CardArtist } from "@/src/app/_components/cardArtist"
 import { useTopArtists } from "@/src/hooks/useTopArtists";
 
-export function TopArtist() {
-  const { artists, loading, error } = useTopArtists();
-
+type TypeTimeRange = {
+    timeRange: string;
+}
+export function TopArtist(timeRange:TypeTimeRange) {
+  const { artists, loading, error } = useTopArtists(timeRange);
   if (loading) return <p>Cargando artistas...</p>;
   if (error) return <p>{error}</p>;
   return (

@@ -2,8 +2,10 @@
 import { useState, useEffect } from "react";
 import { TrackCard } from "@/src/app/_components/trackCard";
 import { Track } from "@/src/types/track";
-
-export function TopTracks() {
+type TypeTimeRange = {
+    timeRange: string;
+}
+export function TopTracks({timeRange}:TypeTimeRange) {
     const [tracksList, setTracksList] = useState<Track[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -11,7 +13,7 @@ export function TopTracks() {
     useEffect(() => {
         async function fetchTrackList() {
             try {
-                const res = await fetch("/api/spotify/top-tracks?limit=5&time_range=short_term");
+                const res = await fetch(`/api/spotify/top-tracks?limit=5&time_range=${timeRange}`);
                 if (!res.ok) throw new Error(`Error fetching play list: ${res.statusText}`);
                 const data = await res.json();
                 setTracksList(data.items);
@@ -22,7 +24,7 @@ export function TopTracks() {
             }
         }
         fetchTrackList();
-    }, []);
+    }, [timeRange]);
 
     if (loading) return <p>Cargando canciones...</p>;
     if (error) return <p>{error}</p>;
