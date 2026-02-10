@@ -16,7 +16,7 @@ export function useTopArtists(
         `/api/spotify/top-artists?limit=10&time_range=${timeRange}`,
       );
       if(!res.ok){
-        throw new Error(`Error fetching top artists: ${res.statusText}`);
+        throw new Error(`No pudimos cargar tus datos. Intentá de nuevo: ${res.statusText}`);
       }
       const data = await res.json()
       return data.items as Artist[];
