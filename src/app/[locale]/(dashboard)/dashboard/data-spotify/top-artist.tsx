@@ -1,11 +1,12 @@
 "use client";
 import { CardArtist } from "@/src/app/_components/cardArtist"
 import { useTopArtists } from "@/src/hooks/useTopArtists";
+import { Loading } from "@/src/app/_components/loading";
 
 export function TopArtist() {
   const { artists, loading, error } = useTopArtists();
 
-  if (loading) return <p>Cargando artistas...</p>;
+  if (loading) return <Loading/>;
   if (error) return <p>{error}</p>;
   return (
     <>

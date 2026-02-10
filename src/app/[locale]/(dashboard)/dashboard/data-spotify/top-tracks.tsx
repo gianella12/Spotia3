@@ -2,6 +2,8 @@
 import { useState, useEffect } from "react";
 import { TrackCard } from "@/src/app/_components/trackCard";
 import { Track } from "@/src/types/track";
+import { Loading } from "@/src/app/_components/loading";
+
 
 export function TopTracks() {
     const [tracksList, setTracksList] = useState<Track[]>([]);
@@ -24,7 +26,7 @@ export function TopTracks() {
         fetchTrackList();
     }, []);
 
-    if (loading) return <p>Cargando canciones...</p>;
+    if (loading) return <Loading/>;
     if (error) return <p>{error}</p>;
     return (
         <div className="max-w-3xl mx-auto flex flex-col gap-1">
