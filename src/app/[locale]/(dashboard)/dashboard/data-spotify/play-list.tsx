@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { PlaylistItem } from "@/src/types/playList";
 import { Track } from "@/src/types/track";
+import  Loading  from "@/src/app/_components/loading";
 
 
 export function Playlist() {
@@ -38,7 +39,7 @@ export function Playlist() {
        
     }
 
-    if (loading) return <p>Cargando playlist...</p>;
+    if (loading) return <Loading/>;
     if (error) return <p>{error}</p>;
     return (
         <div>
