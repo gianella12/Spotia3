@@ -8,6 +8,7 @@ import { TopTracks } from "./data-spotify/top-tracks";
 import { Playlist } from "./data-spotify/play-list";
 import { useState } from "react";
 import TimeRangeSelector from "@/src/app/_components/TimeRangeSelector";
+import LogOut from "@/src/app/_components/LogOut";
 
 export default function Dashboard() {
   const { data: session, status } = useSession();
@@ -19,6 +20,7 @@ export default function Dashboard() {
       <div className="flex flex-col items-end">
         <h1>Bienvenida {session.user?.name}</h1>
         <p> {session.user?.email}</p>
+        <LogOut />
       </div>
       <Playlist />
       <TopGenere />
