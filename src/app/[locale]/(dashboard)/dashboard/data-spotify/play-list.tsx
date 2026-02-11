@@ -1,77 +1,81 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { PlaylistItem } from "@/src/types/playList";
 import { Track } from "@/src/types/track";
-import  Loading  from "@/src/app/_components/loading";
+import Loading from "@/src/app/_components/loading";
+import { useQuery } from "@tanstack/react-query";
+
 
 
 export function Playlist() {
-    const [playList, setPlayList] = useState<PlaylistItem[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const [tracks, setTracks] = useState<Track[]>([]);
+    const [selectedPlaylistId, setSelectedPlaylistId] = useState<string>('');
+    const {
+        data: playList = [],
+        isLoading: isLoadingPlayList,
+        isError: isErrorPlayList,
+        error: errorPlayList,
+    } = useQuery<PlaylistItem[]>({
+        queryKey: ["playlists"],
+        queryFn: async () => {
+            const res = await fetch("/api/spotify/play-list?limit=5");
+            if (!res.ok) throw new Error(`Error al obtener play list, no pudimos cargar los datos. Reintentalo: ${res.statusText}`);
+            return res.json();
+        },
+    });
 
-    useEffect(() => {
-        async function fetchPlayList() {
-            try {
-                const res = await fetch("/api/spotify/play-list?limit=5");
-                if (!res.ok) throw new Error(`Error fetching play list: ${res.statusText}`);
-                const data = await res.json();
+    const {
+        data: tracks = [],
+        isLoading: isLoadingTracks,
+        isError: isErrorTracks,
+        error: errorTracks,
+        refetch: refetchTracks,
+    } = useQuery<Track[]>({
+        queryKey: ["playlist-tracks", selectedPlaylistId],
+        queryFn: async () => {
+            if (!selectedPlaylistId) return [];
+            const res = await fetch(`/api/spotify/play-list/${selectedPlaylistId}/tracks`);
+            if (!res.ok) throw new Error(`Error al obtener las canciones: ${res.statusText}`);
+            return res.json();
+        },
+        enabled: !!selectedPlaylistId, // solo corre si hay playlist seleccionada sin enabled ejecuta automáticamente el queryFn
 
-                setPlayList(data);
-            } catch (err) {
-                setError(`No se pudieron cargar las canciones: ${err}`);
-            } finally {
-                setLoading(false);
-            }
-        }
-        fetchPlayList();
-    }, []);
+    });
 
-    const fetchTracks = async (playlistId: string) => {
-        const res = await fetch(`/api/spotify/play-list/${playlistId}/tracks`);
-        if (!res.ok) {
-            setError(`Error fetching tracks: ${res.statusText}`);
-            return;
-        }
-        const data = await res.json();
-        setTracks(data);
-       
-    }
+    if (isLoadingPlayList) return <Loading />;
+    if (isErrorPlayList) return <p>{(errorPlayList as Error).message}</p>;
 
-    if (loading) return <Loading/>;
-    if (error) return <p>{error}</p>;
     return (
         <div>
             <h2>Mis Playlists</h2>
             <ul>
-                {playList.map((playlist) => (
-                    <li key={playlist.id}>
-                        {playlist.name}
+                {playList.map((pl) => (
+                    <li key={pl.id}>
+                        {pl.name}
                         <button
-                            onClick={() => fetchTracks(playlist.id)}
-                            className="border-r-green-400 border m-3">
-                            Ver canciones
+                            onClick={() => {
+                                setSelectedPlaylistId(pl.id);
+                                refetchTracks();
+                            }}
+                            className="ml-2 px-2 py-1 bg-blue-500 text-white rounded"
+                        >
+                            Ver tracks
                         </button>
                     </li>
                 ))}
             </ul>
 
 
-            {tracks.length > 0 && (
+            {selectedPlaylistId && (
                 <div>
-                    <h3>Canciones de la Playlist</h3>
+                    {isLoadingTracks && <Loading />}
+                    {isErrorTracks && <p>{(errorTracks as Error).message}</p>}
                     <ul>
                         {tracks.map((track) => (
-                            <li key={track.id}>
-                                {track.name} — {track.artists.map((a) => a.name).join(", ")}
-                            </li>
+                            <li key={track.id}>{track.name}</li>
                         ))}
                     </ul>
                 </div>
-            )
-            }
-
+            )}
         </div>
 
 
