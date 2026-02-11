@@ -3,6 +3,7 @@ import { CardArtist } from "@/src/app/_components/cardArtist"
 import { useTopArtists } from "@/src/hooks/useTopArtists";
 import Loading from "@/src/app/_components/loading";
 import { Artist } from "@/src/types/spotify";
+import { useRedirectOn401 } from "@/src/hooks/useRedirectOn401i";
 
 
 type TypeTimeRange = {
@@ -11,19 +12,29 @@ type TypeTimeRange = {
 export function TopArtist(timeRange: TypeTimeRange) {
   const { data: artists, isLoading, isError, error, refetch } = useTopArtists(timeRange);
 
-  if (isLoading) return <Loading />;
-  if (isError) return (
-    <div>
-      <p>{(error as Error).message}</p>
-      <button
-        onClick={() => refetch()}
-        className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
-      >
-        Reintentar
-      </button>
-    </div>
+  useRedirectOn401({ isError, error });
 
-  );
+  if (isError) {
+    const err = error as Error;
+    if (err.message.includes("401")) {
+      return (
+        <p>No autorizado: tu sesión expiró o no tienes permisos. Redirigiendo...</p>
+      );
+
+    }
+    return (
+      <div>
+        <p>{(error as Error).message}</p>
+        <button
+          onClick={() => refetch()}
+          className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
+        >
+          Reintentar
+        </button>
+      </div>
+    )
+  }
+  if (isLoading) return <Loading />;
   return (
     <>
       <div className="flex flex-col items-center justify-center">

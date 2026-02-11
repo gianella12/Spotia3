@@ -4,11 +4,13 @@ import { PlaylistItem } from "@/src/types/playList";
 import { Track } from "@/src/types/track";
 import Loading from "@/src/app/_components/loading";
 import { useQuery } from "@tanstack/react-query";
+import { useRedirectOn401 } from "@/src/hooks/useRedirectOn401i";
 
 
 
 export function Playlist() {
     const [selectedPlaylistId, setSelectedPlaylistId] = useState<string>('');
+   
     const {
         data: playList = [],
         isLoading: isLoadingPlayList,
@@ -18,7 +20,7 @@ export function Playlist() {
         queryKey: ["playlists"],
         queryFn: async () => {
             const res = await fetch("/api/spotify/play-list?limit=5");
-            if (!res.ok) throw new Error(`Error al obtener play list, no pudimos cargar los datos. Reintentalo: ${res.statusText}`);
+            if (!res.ok) throw new Error(`Error al obtener play list, no pudimos cargar los datos. Reintentalo: ${res.status}`);
             return res.json();
         },
     });
@@ -34,16 +36,26 @@ export function Playlist() {
         queryFn: async () => {
             if (!selectedPlaylistId) return [];
             const res = await fetch(`/api/spotify/play-list/${selectedPlaylistId}/tracks`);
-            if (!res.ok) throw new Error(`Error al obtener las canciones: ${res.statusText}`);
+            if (!res.ok) throw new Error(`Error al obtener las canciones: ${res.status}`);
             return res.json();
         },
         enabled: !!selectedPlaylistId, // solo corre si hay playlist seleccionada sin enabled ejecuta automáticamente el queryFn
 
     });
 
-    if (isLoadingPlayList) return <Loading />;
-    if (isErrorPlayList) return <p>{(errorPlayList as Error).message}</p>;
+    useRedirectOn401({ isError: isErrorPlayList, error: errorPlayList });
 
+    if (isErrorPlayList) {
+        const err = errorPlayList as Error;
+        if (err.message.includes("401")) {
+            return (
+                <p>No autorizado: tu sesión expiró o no tienes permisos. Redirigiendo...</p>
+            );
+
+        }
+        return <p>{err.message}</p>;
+    }
+    if (isLoadingPlayList) return <Loading />;
     return (
         <div>
             <h2>Mis Playlists</h2>
