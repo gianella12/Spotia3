@@ -1,57 +1,84 @@
 name: Test Project
 
 on:
-    pull_request:
-        branches:
-            - main
-            - master
+  pull_request:
+    branches:
+      - main
+      - master
+  push:
+    branches:
+      - main
+      - master
 
 jobs:
-    code-validation:
-        name: Code Validation
-        runs-on: tenki-standard-medium-4c-8g
-        timeout-minutes: 10
-        container:
-            image: node:20
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v4
-              with:
-                node-version: 20
+  code-validation:
+    name: Code Validation
+    runs-on: tenki-standard-medium-4c-8g
+    timeout-minutes: 10
+    container:
+      image: node:20
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-            - name: PNPM setup
-              uses: pnpm/action-setup@v4
-              with:
-                version: 10
+      - name: PNPM setup
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
 
-            - name: Install dependencies
-              run: pnpm install
+      - name: Install dependencies
+        run: pnpm install
 
-            - name: Run lint
-              run: pnpm lint
+      - name: Run lint
+        run: pnpm lint
 
-    test:
-        name: Test Project
-        runs-on: tenki-standard-medium-4c-8g
-        timeout-minutes: 10
-        container:
-            image: node:20
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v4
-              with:
-                node-version: 20
+  test:
+    name: Test Project
+    runs-on: tenki-standard-medium-4c-8g
+    timeout-minutes: 10
+    container:
+      image: node:20
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-            - name: PNPM setup
-              uses: pnpm/action-setup@v4
-              with:
-                version: 10
+      - name: PNPM setup
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
 
-            - name: Install dependencies
-              run: pnpm install
+      - name: Install dependencies
+        run: pnpm install
 
-            - name: Run tests
-              run: pnpm test
+      - name: Run tests
+        run: pnpm test
 
-            - name: Build
-              run: pnpm build
+      - name: Build
+        run: pnpm build
+
+  deploy:
+    name: Deploy to Cloudflare Pages
+    runs-on: ubuntu-latest
+    needs: [code-validation, test]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: PNPM setup
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build con OpenNext
+        run: pnpm build   
+
+      - name: Publish to Cloudflare Pages
+        uses: cloudflare/pages-action@1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: aeb5ba8a157cbbd4bcccf9e5819e64fd
+          projectName: spotia3
+          directory: .open-next
