@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+      - experiment/cloudflare-static-export       # prueba
+
 
 jobs:
   build-and-deploy:
