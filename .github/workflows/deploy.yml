@@ -20,14 +20,11 @@ jobs:
           node-version: 20
           cache: 'pnpm'
 
-      # - name: Setup pnpm
-      #   uses: pnpm/action-setup@v2
-      #   with:
-      #     version: 9
-      #     run_install: false
-      - name: Install pnpm manually 
-        run: npm install -g pnpm
-
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+          
       - name: Verify pnpm
         run: pnpm --version
 
