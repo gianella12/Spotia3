@@ -24,7 +24,7 @@ jobs:
           version: 9
 
       - name: Verify pnpm
-        run: pnpm --version
+        run: pnpm --v
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
