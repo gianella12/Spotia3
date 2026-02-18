@@ -28,12 +28,22 @@ async function callGPT(artistas: Artist[]) {
   ).join("\n")
 
   const prompt = `
-Estos son los artistas escuchados recientemente por el usuario:
+Sos un experto en música con un sentido del humor increíble.
 
+El usuario escucha estos artistas:
 ${descripcionArtistas}
 
-Genera una descripción breve del perfil musical del usuario.
-Debe sonar atractiva, modernay graciosa.
+Con base en eso, escribí UNA SOLA descripción de su perfil musical en español.
+
+Reglas:
+- Máximo 4 oraciones
+- Tono divertido y gracioso, como si fuera una bio de Instagram
+- Mencioná alguno de sus géneros o artistas favoritos
+- Que suene como si conocieras al usuario de toda la vida
+- No uses emojis
+- IMPORTANTE: no uses asteriscos (*), no uses negritas, no uses ningún símbolo de formato. Solo texto plano.
+- Respondé directamente con la descripción, sin títulos ni opciones
+-no hagas enfasis en ninguna palabra 
 `;
 
   const response = await client.chat.completions.create({
@@ -50,13 +60,24 @@ async function callGemini(artistas: Artist[]) {
       `-${artist.name} | Generos: ${artist.genres.join(",")} | Popularidad: ${artist.popularity}`
   ).join("\n")
 
-  const prompt = `
-Estos son los artistas escuchados recientemente por el usuario:
 
+  const prompt = `
+Sos un experto en música con un sentido del humor increíble.
+
+El usuario escucha estos artistas:
 ${descripcionArtistas}
 
-Genera una descripción breve del perfil musical del usuario.
-Debe sonar atractiva, modernay graciosa.
+Con base en eso, escribí UNA SOLA descripción de su perfil musical en español.
+
+Reglas:
+- Máximo 4 oraciones
+- Tono divertido y gracioso, como si fuera una bio de Instagram
+- Mencioná alguno de sus géneros o artistas favoritos
+- Que suene como si conocieras al usuario de toda la vida
+- No uses emojis
+- IMPORTANTE: no uses asteriscos (*), no uses negritas, no uses ningún símbolo de formato. Solo texto plano.
+- Respondé directamente con la descripción, sin títulos ni opciones
+-no hagas enfasis en ninguna palabra 
 `;
   const res = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEYS.gemini}`,
@@ -92,13 +113,24 @@ async function callClaude(artistas: Artist[]) {
       `-${artist.name} | Generos: ${artist.genres.join(",")} | Popularidad: ${artist.popularity}`
   ).join("\n")
 
-  const prompt = `
-Estos son los artistas escuchados recientemente por el usuario:
 
+  const prompt = `
+Sos un experto en música con un sentido del humor increíble.
+
+El usuario escucha estos artistas:
 ${descripcionArtistas}
 
-Genera una descripción breve del perfil musical del usuario.
-Debe sonar atractiva, modernay graciosa.
+Con base en eso, escribí UNA SOLA descripción de su perfil musical en español.
+
+Reglas:
+- Máximo 4 oraciones
+- Tono divertido y gracioso, como si fuera una bio de Instagram
+- Mencioná alguno de sus géneros o artistas favoritos
+- Que suene como si conocieras al usuario de toda la vida
+- No uses emojis
+- IMPORTANTE: no uses asteriscos (*), no uses negritas, no uses ningún símbolo de formato. Solo texto plano.
+- Respondé directamente con la descripción, sin títulos ni opciones
+-no hagas enfasis en ninguna palabra 
 `;
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
