@@ -17,26 +17,26 @@ beforeEach(() => {
 import { askAI } from './aiClient';
 import { Artist } from '../types/spotify';
 
-const mockArtists:Artist[] = [
- {
-      id: '1',
-      name: 'Dua Lipa',
-      genres: ['pop', 'dance pop'],
-      popularity: 95,
-      images: [],
-      external_urls: { spotify: '' },
-      followers: { total: 0 },
-    },
-    {
-      id: '2',
-      name: 'The Weeknd',
-      genres: ['canadian contemporary r&b', 'pop'],
-      popularity: 97,
-      images: [],
-      external_urls: { spotify: '' },
-      followers: { total: 0 },
-    },
-  ];
+const mockArtists: Artist[] = [
+  {
+    id: '1',
+    name: 'Dua Lipa',
+    genres: ['pop', 'dance pop'],
+    popularity: 95,
+    images: [],
+    external_urls: { spotify: '' },
+    followers: { total: 0 },
+  },
+  {
+    id: '2',
+    name: 'The Weeknd',
+    genres: ['canadian contemporary r&b', 'pop'],
+    popularity: 97,
+    images: [],
+    external_urls: { spotify: '' },
+    followers: { total: 0 },
+  },
+];
 describe('askAI (gemini provider)', () => {
   it('returns the text from Gemini response', async () => {
     fetchMock.mockResolvedValue({
@@ -49,7 +49,7 @@ describe('askAI (gemini provider)', () => {
         }),
     });
 
-    const result = await askAI(mockArtists);
+    const result = await askAI({ artists: mockArtists });
 
     expect(fetchMock).toHaveBeenCalledOnce();
     expect(fetchMock).toHaveBeenCalledWith(
@@ -65,7 +65,7 @@ describe('askAI (gemini provider)', () => {
       json: () => Promise.resolve({ candidates: [] }),
     });
 
-    const result = await askAI(mockArtists);
+    const result = await askAI({ artists: mockArtists });
 
     expect(result).toBe('');
   });
