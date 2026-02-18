@@ -80,7 +80,8 @@ Debe sonar atractiva, modernay graciosa.
   );
 
   const data = await res.json();
-  console.log("Respuesta de Gemini:", data);
+  console.log("Respuesta de Gemini:", JSON.stringify(data, null, 2)); // ya lo tenés
+  console.log("Status:", res.status);
   return data.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
 
 }

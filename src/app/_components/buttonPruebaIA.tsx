@@ -1,67 +1,43 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useTopArtists } from "@/src/hooks/useTopArtists";
 import Loading from "./loading"
+import { usePostMutation } from "@/src/hooks/usePostMutation";
+import { Artist } from "@/src/types/spotify";
 
 export default function PerfilMusicalIA() {
-  const [responseIa, setResponseIa] = useState()
-  const [isAiLoading, setIsAiLoading] = useState(false);
   const { data: artists = [], isError, error, isLoading } = useTopArtists();
+  const { mutate, isPending, data: responseIa} = usePostMutation<{ artists: Artist[] }, { result: string }>("/api/askAI")
 
-  useEffect(() => {
-    const handelClick = async () => {
-
-      if (!artists || artists.length === 0) return;
-
-      setIsAiLoading(true);
-      try {
-        const response = await fetch("/api/askAI", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            artists
-          })
-
-        });
-        const data = await response.json();
-        setResponseIa(data.result)
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setIsAiLoading(false);
-      }
-    }
+ useEffect(() => {
     if (!isLoading && !isError && artists.length > 0) {
-      handelClick()
+      mutate({artists});
     }
-  }, [isLoading, isError, artists])
+  }, [isLoading, isError, artists,mutate]);
 
-
-  if (isLoading) return <Loading />
+  if (isPending || isLoading) return <Loading />;
 
   if (isError) {
     const err = error as Error;
     if (err.message.includes("401")) {
-      return <p>No autorizado: tu sesión expiró o no tienes permisos. Redirigiendo...</p>
+      return <p>No autorizado: tu sesión expiró o no tienes permisos.</p>;
     }
-    return <p>{(error as Error).message}</p>
+    return <p>{err.message}</p>;
   }
 
-  return (
-    <div>
+return (
+  <div>
 
-      {isAiLoading && <p>La IA está pensando...</p>}
+    {isPending && <p>La IA está pensando...</p>}
 
-      {!isLoading && responseIa && (
-        <div className="w-90">
-          <h2 className="flex items-center justify-center border-green-500 border">
-            {responseIa}
-          </h2>
-        </div>
-      )}
-    </div>
-  );
+    {responseIa && (
+      <div className="w-90">
+        <h2 className="flex items-center justify-center border-green-500 border">
+          {responseIa.result}
+        </h2>
+      </div>
+    )}
+  </div>
+);
 }
 
