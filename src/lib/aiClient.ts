@@ -47,7 +47,7 @@ Reglas:
 `;
 
   const response = await client.chat.completions.create({
-    model: "gpt-4o-mini",
+    model: process.env.GPT_MODEL!,
     messages: [{ role: "user", content: prompt }],
   })
 
@@ -87,6 +87,7 @@ Reglas:
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
+        model: process.env.GEMINI_MODEL!,
         contents: [
           {
             parts: [
@@ -139,7 +140,7 @@ Reglas:
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: "claude-3-opus-20240229",
+      model: process.env.CLAUDE_MODEL!,
       messages: [
         {
           role: "user",
