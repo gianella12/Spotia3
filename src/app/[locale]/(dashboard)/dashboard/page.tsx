@@ -10,6 +10,7 @@ import  Loading  from "@/src/app/_components/loading";
 import { useState } from "react";
 import TimeRangeSelector from "@/src/app/_components/TimeRangeSelector";
 import LogOut from "@/src/app/_components/LogOut";
+import { redirect } from "next/navigation"
 
 
 export default function Dashboard() {
@@ -17,7 +18,7 @@ export default function Dashboard() {
   const [timeRange, setTimeRange] = useState("short_term");
 
   if (status === "loading") return <Loading />;
-  if (!session) return <p>No estás logueada</p>;
+  if (!session) return redirect("/auth/login");
   return (
     <div>
       <div className="flex flex-col items-end">
