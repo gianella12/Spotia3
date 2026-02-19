@@ -21,7 +21,6 @@ export function TrackCard({ track }: { track: Track }) {
             {track.artists.map(a => a.name).join(", ")}
           </p>
         </div>
-
         <span className="text-sm text-gray-400">
           {formatearDuracion(track.duration_ms)}
         </span>
